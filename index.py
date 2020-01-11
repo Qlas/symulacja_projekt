@@ -13,12 +13,12 @@ def mainLoop(timestart, timeend):
     mealPlace = [0, 0]                                              #place where meal is put for client
     timeInmealPlace = [0, 0]
 
-    queueToCash = [[]]
+    queueToCash = [[], []]
     cashRegister = [0, 0, 0, 0]
     timeinCash = [0, 0, 0, 0]
     queueNumber = 0
 
-    nextClientAppear = appearTime(timestart, 60, 30)
+    nextClientAppear = appearTime(timestart, 6, 3)
 
     for time in range(int(timestart), int(timeend)+1):
         if nextClientAppear == time:
@@ -44,19 +44,22 @@ def mainLoop(timestart, timeend):
                 timeinCash[i] = 0
 
             if cashRegister[i] == 0 and any(len(Queue) != 0 for Queue in queueToCash):
+                while len(queueToCash[queueNumber]) == 0:
+                    queueNumber = queueNumber+1 if queueNumber < len(queueToCash)-1 else 0
                 timeinCash[i] = appearTime(time, 20, 10)            #get how long client stay in cash
                 cashRegister[i] = queueToCash[queueNumber][0]       #move client from queue to cash
                 queueToCash[queueNumber].pop(0)                     #delet client from queue
 
 
-    print(queueToCash)
     print(mealPlace)
     print(timeInmealPlace)
     print(queueToMeal)
     print(timeinCash)
     print(cashRegister)
+    print(queueToCash)
 
-
+    return sum(len(x) for x in queueToMeal) + sum(x is not 0 for x in cashRegister), \
+           sum(len(x) for x in queueToCash) + sum(x is not 0 for x in mealPlace)
 
 
 
@@ -67,4 +70,7 @@ def mainLoop(timestart, timeend):
 
 start = 8.00
 end = 18.00
-mainLoop(start*3600, end*3600)
+queueToMeal, queueToCash = mainLoop(start*3600, end*3600)
+
+print("klienci którzy zostali przy oddawaniu posiłku na koniec dnia: ", queueToMeal)
+print("klienci którzy zostali przy kasie na koniec dnia: ", queueToCash)
